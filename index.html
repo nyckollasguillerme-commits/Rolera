@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html = r'''<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -71,6 +71,7 @@ const p=Math.min(1,(t-t0)/duration), ease=1-Math.pow(1-p,3);
 angle=startAngle+(endAngle-startAngle)ease;draw();
 if(p<1){requestAnimationFrame(spin)}else{
 angle%=2Math.PI;
+// pointer is at -PI/2; determine segment under it
 let rel=((Math.PI/2-angle)%(2Math.PI)+2Math.PI)%(2*Math.PI);
 const idx=Math.floor(rel/slice)%N;
 document.getElementById('result').textContent="🎉 "+items[idx]+" 🎉";
@@ -83,5 +84,8 @@ const b=document.getElementById('btn');
 b.addEventListener('mousedown',start);b.addEventListener('mouseup',stop);b.addEventListener('mouseleave',e=>{if(charging)stop(e)});
 b.addEventListener('touchstart',start,{passive:false});b.addEventListener('touchend',stop,{passive:false});
 </script>
-</body>
-</html>
+</body></html>'''
+path=Path("/mnt/data/roleta_da_live_do_junim.html")
+path.write_text(html, encoding="utf-8")
+print(f"Baixar a Roleta da Live do Junim")
+
