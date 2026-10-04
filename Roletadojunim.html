@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roleta da Live do Junim</title>
+<style>
+{box-sizing:border-box}body{margin:0;min-height:100vh;background:#111;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center}
+.app{width:min(760px,96vw);text-align:center}.title{font-size:clamp(28px,6vw,52px);font-weight:900;margin-bottom:14px;text-shadow:0 4px 0 #000}
+.wheelbox{position:relative;width:min(620px,88vw);aspect-ratio:1;margin:auto}
+canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 8px 15px #000)}
+.pointer{position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-top:48px solid #fff;filter:drop-shadow(0 3px 3px #000);z-index:3}
+.controls{margin-top:18px}.powerbar{height:24px;background:#292929;border:2px solid #555;border-radius:14px;overflow:hidden}
+.power{height:100%;width:0;background:linear-gradient(90deg,#20e070,#ffe000,#ff3d3d);transition:width .05s}
+button{margin-top:14px;width:min(500px,90vw);padding:16px 22px;border:0;border-radius:14px;background:#ffcf00;color:#111;font-size:22px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #a77e00}
+button:active{transform:translateY(4px);box-shadow:0 1px 0 #a77e00}.hint{font-size:15px;color:#bbb;margin-top:9px}.result{min-height:58px;margin-top:15px;font-size:26px;font-weight:900}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="title">🎡 ROLETA DA LIVE DO JUNIM 🎡</div>
+<div class="wheelbox"><div class="pointer"></div><canvas id="wheel" width="900" height="900"></canvas></div>
+<div class="controls">
+<div class="powerbar"><div id="power" class="power"></div></div>
+<button id="btn">SEGURE PARA CARREGAR A FORÇA</button>
+<div class="hint">Segure o botão e solte para girar.</div>
+<div id="result" class="result"></div>
+</div>
+</div>
+<script>
+const items=[
+"NADA","5 MOEDAS","10 MOEDAS","15 MOEDAS","20 MOEDAS",
+"DANCINHA","5 POLICHINELOS","5 PULINHOS","5 AGACHAMENTOS",
+"CHAT ESCOLHE A MÚSICA","NADA","NADA","NADA"
+];
+const canvas=document.getElementById('wheel'),ctx=canvas.getContext('2d'),N=items.length;
+const cx=450,cy=450,r=420, slice=2Math.PI/N;
+let angle=0,charging=false,power=0,dir=1,raf=null;
+
+function draw(){
+ctx.clearRect(0,0,900,900);
+for(let i=0;i<N;i++){
+const a=angle+islice-Math.PI/2;
+ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+slice);ctx.closePath();
+ctx.fillStyle=hsl(${i360/N},85%,${i%2?55:62}%);ctx.fill();
+ctx.strokeStyle="#111";ctx.lineWidth=5;ctx.stroke();
+ctx.save();ctx.translate(cx,cy);ctx.rotate(a+slice/2);
+ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="bold 25px Arial";
+ctx.shadowColor="#000";ctx.shadowBlur=5;ctx.fillText(items[i],r-25,9);ctx.restore();
+}
+ctx.beginPath();ctx.arc(cx,cy,75,0,2*Math.PI);ctx.fillStyle="#111";ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=6;ctx.stroke();
+ctx.fillStyle="#fff";ctx.font="bold 24px Arial";ctx.textAlign="center";ctx.fillText("JUNIM",cx,8);
+}
+draw();
+
+function charge(){
+if(!charging)return;
+power+=dir1.5;if(power>=100){power=100;dir=-1}if(power<=0){power=0;dir=1}
+document.getElementById('power').style.width=power+"%";raf=requestAnimationFrame(charge);
+}
+function start(e){e.preventDefault();if(charging)return;charging=true;power=0;dir=1;charge()}
+function stop(e){
+e.preventDefault();if(!charging)return;charging=false;cancelAnimationFrame(raf);
+const strength=Math.max(0.25,power/100);
+const spins=5+Math.floor(strength7)+Math.random()2;
+const target=Math.random()2Math.PI;
+const startAngle=angle, endAngle=angle+spins2Math.PI+target;
+const duration=2600+strength1300,t0=performance.now();
+function spin(t){
+const p=Math.min(1,(t-t0)/duration), ease=1-Math.pow(1-p,3);
+angle=startAngle+(endAngle-startAngle)ease;draw();
+if(p<1){requestAnimationFrame(spin)}else{
+angle%=2Math.PI;
+let rel=((Math.PI/2-angle)%(2Math.PI)+2Math.PI)%(2*Math.PI);
+const idx=Math.floor(rel/slice)%N;
+document.getElementById('result').textContent="🎉 "+items[idx]+" 🎉";
+document.getElementById('power').style.width="0%";
+}
+}
+requestAnimationFrame(spin);
+}
+const b=document.getElementById('btn');
+b.addEventListener('mousedown',start);b.addEventListener('mouseup',stop);b.addEventListener('mouseleave',e=>{if(charging)stop(e)});
+b.addEventListener('touchstart',start,{passive:false});b.addEventListener('touchend',stop,{passive:false});
+</script>
+</body>
+</html>
